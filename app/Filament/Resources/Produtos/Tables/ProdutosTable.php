@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Insumos\Tables;
+namespace App\Filament\Resources\Produtos\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class InsumosTable
+class ProdutosTable
 {
     public static function configure(Table $table): Table
     {
@@ -19,24 +18,17 @@ class InsumosTable
                     ->label('Nome')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('codigo_id')
-                    ->label('Código ID')
-                    ->searchable(),
-                TextColumn::make('codigo_interno')
-                    ->label('Código Interno')
-                    ->searchable(),
-                TextColumn::make('codigo_barras')
-                    ->label('Código de Barras')
-                    ->searchable(),
-                IconColumn::make('produto_unico')
-                    ->label('Produto Único')
-                    ->boolean(),
-                TextColumn::make('unidade_medida')
-                    ->label('Unidade de Medida')
-                    ->searchable(),
-                TextColumn::make('qtd_por_caixa')
-                    ->label('Peças/Caixa')
+                TextColumn::make('qtd_pecas_por_caixa')
+                    ->label('Peças/Chapa')
                     ->numeric()
+                    ->sortable(),
+                TextColumn::make('custo_unitario')
+                    ->label('Custo Unitário')
+                    ->money('BRL')
+                    ->sortable(),
+                TextColumn::make('custo_caixa')
+                    ->label('Custo Caixa')
+                    ->money('BRL')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

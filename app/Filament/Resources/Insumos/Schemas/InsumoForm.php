@@ -30,6 +30,9 @@ class InsumoForm
                 TextInput::make('unidade_medida')
                     ->label('Unidade de Medida')
                     ->maxLength(255),
+                TextInput::make('qtd_por_caixa')
+                    ->label('Peças por Caixa')
+                    ->numeric(),
             ]);
     }
 }

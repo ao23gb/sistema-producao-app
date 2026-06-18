@@ -13,6 +13,7 @@ class Insumo extends Model
         'codigo_barras',
         'produto_unico',
         'unidade_medida',
+        'qtd_por_caixa',
     ];
 
     protected $casts = [
