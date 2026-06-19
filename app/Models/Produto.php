@@ -31,4 +31,16 @@ class Produto extends Model
             ->withPivot('quantidade')
             ->withTimestamps();
     }
+
+    public function recalcularCusto(): void
+    {
+        $custoChapa = $this->materiais()->get()->sum(
+            fn ($material) => $material->valor_custo * $material->pivot->quantidade
+        );
+
+        $this->updateQuietly([
+            'custo_caixa' => $custoChapa,
+            'custo_unitario' => $this->qtd_pecas_por_caixa > 0 ? $custoChapa / $this->qtd_pecas_por_caixa : 0,
+        ]);
+    }
 }

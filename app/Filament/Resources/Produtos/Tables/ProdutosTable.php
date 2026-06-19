@@ -27,7 +27,7 @@ class ProdutosTable
                     ->money('BRL')
                     ->sortable(),
                 TextColumn::make('custo_caixa')
-                    ->label('Custo Caixa')
+                    ->label('Custo Chapa')
                     ->money('BRL')
                     ->sortable(),
                 TextColumn::make('created_at')

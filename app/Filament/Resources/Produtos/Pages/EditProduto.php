@@ -55,5 +55,7 @@ class EditProduto extends EditRecord
         $this->record->insumos()->sync(
             collect($this->insumosSelecionados)->mapWithKeys(fn ($item) => [$item['insumo_id'] => ['quantidade' => $item['quantidade']]])
         );
+
+        $this->record->recalcularCusto();
     }
 }

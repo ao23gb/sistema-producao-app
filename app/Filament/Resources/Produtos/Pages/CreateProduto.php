@@ -32,5 +32,7 @@ class CreateProduto extends CreateRecord
         foreach ($this->insumosSelecionados as $item) {
             $this->record->insumos()->attach($item['insumo_id'], ['quantidade' => $item['quantidade']]);
         }
+
+        $this->record->recalcularCusto();
     }
 }
