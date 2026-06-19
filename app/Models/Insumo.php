@@ -19,4 +19,11 @@ class Insumo extends Model
     protected $casts = [
         'produto_unico' => 'boolean',
     ];
+
+    protected static function booted(): void
+    {
+        static::created(function (Insumo $insumo) {
+            Estoque::create(['insumo_id' => $insumo->id]);
+        });
+    }
 }

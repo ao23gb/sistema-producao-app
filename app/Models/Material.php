@@ -24,4 +24,11 @@ class Material extends Model
         'espessura_mm' => 'decimal:2',
         'valor_custo' => 'decimal:2',
     ];
+
+    protected static function booted(): void
+    {
+        static::created(function (Material $material) {
+            Estoque::create(['material_id' => $material->id]);
+        });
+    }
 }
