@@ -31,4 +31,18 @@ class Estoque extends Model
     {
         return $this->belongsTo(Material::class);
     }
+
+    public function getQuantidadeUnitariaAttribute()
+    {
+        if ($this->insumo && ! $this->insumo->produto_unico && $this->insumo->qtd_por_caixa) {
+            return $this->estoque_total * $this->insumo->qtd_por_caixa;
+        }
+
+        return $this->estoque_total;
+    }
+
+    public function getEhPorCaixaAttribute(): bool
+    {
+        return $this->insumo && ! $this->insumo->produto_unico;
+    }
 }

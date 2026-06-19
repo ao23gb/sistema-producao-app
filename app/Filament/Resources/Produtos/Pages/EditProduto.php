@@ -29,6 +29,11 @@ class EditProduto extends EditRecord
             'quantidade' => $insumo->pivot->quantidade,
         ])->toArray();
 
+        $data['componentesSelecionados'] = $this->record->componentes->map(fn ($componente) => [
+            'produto_componente_id' => $componente->id,
+            'quantidade' => $componente->pivot->quantidade,
+        ])->toArray();
+
         return $data;
     }
 
@@ -36,8 +41,9 @@ class EditProduto extends EditRecord
     {
         $this->materiaisSelecionados = $data['materiaisSelecionados'] ?? [];
         $this->insumosSelecionados = $data['insumosSelecionados'] ?? [];
+        $this->componentesSelecionados = $data['componentesSelecionados'] ?? [];
 
-        unset($data['materiaisSelecionados'], $data['insumosSelecionados']);
+        unset($data['materiaisSelecionados'], $data['insumosSelecionados'], $data['componentesSelecionados']);
 
         return $data;
     }
@@ -45,6 +51,8 @@ class EditProduto extends EditRecord
     protected array $materiaisSelecionados = [];
 
     protected array $insumosSelecionados = [];
+
+    protected array $componentesSelecionados = [];
 
     protected function afterSave(): void
     {
@@ -54,6 +62,10 @@ class EditProduto extends EditRecord
 
         $this->record->insumos()->sync(
             collect($this->insumosSelecionados)->mapWithKeys(fn ($item) => [$item['insumo_id'] => ['quantidade' => $item['quantidade']]])
+        );
+
+        $this->record->componentes()->sync(
+            collect($this->componentesSelecionados)->mapWithKeys(fn ($item) => [$item['produto_componente_id'] => ['quantidade' => $item['quantidade']]])
         );
 
         $this->record->recalcularCusto();

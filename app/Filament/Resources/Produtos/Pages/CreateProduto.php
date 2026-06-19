@@ -13,12 +13,15 @@ class CreateProduto extends CreateRecord
 
     protected array $insumosSelecionados = [];
 
+    protected array $componentesSelecionados = [];
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $this->materiaisSelecionados = $data['materiaisSelecionados'] ?? [];
         $this->insumosSelecionados = $data['insumosSelecionados'] ?? [];
+        $this->componentesSelecionados = $data['componentesSelecionados'] ?? [];
 
-        unset($data['materiaisSelecionados'], $data['insumosSelecionados']);
+        unset($data['materiaisSelecionados'], $data['insumosSelecionados'], $data['componentesSelecionados']);
 
         return $data;
     }
@@ -31,6 +34,10 @@ class CreateProduto extends CreateRecord
 
         foreach ($this->insumosSelecionados as $item) {
             $this->record->insumos()->attach($item['insumo_id'], ['quantidade' => $item['quantidade']]);
+        }
+
+        foreach ($this->componentesSelecionados as $item) {
+            $this->record->componentes()->attach($item['produto_componente_id'], ['quantidade' => $item['quantidade']]);
         }
 
         $this->record->recalcularCusto();

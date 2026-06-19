@@ -14,10 +14,14 @@ class Insumo extends Model
         'produto_unico',
         'unidade_medida',
         'qtd_por_caixa',
+        'custo_unitario',
+        'custo_caixa',
     ];
 
     protected $casts = [
         'produto_unico' => 'boolean',
+        'custo_unitario' => 'decimal:2',
+        'custo_caixa' => 'decimal:2',
     ];
 
     protected static function booted(): void

@@ -20,9 +20,12 @@ class EstoquesTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('estoque_total')
-                    ->label('Estoque Total')
-                    ->numeric()
+                    ->label('Quantidade em Caixas')
+                    ->formatStateUsing(fn ($state, $record) => $record->eh_por_caixa ? $state : '—')
                     ->sortable(),
+                TextColumn::make('quantidade_unitaria')
+                    ->label('Quantidade Unitária')
+                    ->numeric(),
                 TextColumn::make('aguardando_entrega')
                     ->label('Aguardando Entrega')
                     ->numeric()
