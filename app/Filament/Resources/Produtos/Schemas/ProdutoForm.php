@@ -22,9 +22,8 @@ class ProdutoForm
                     ->required()
                     ->numeric()
                     ->default(1),
-                Repeater::make('materiais')
+                Repeater::make('materiaisSelecionados')
                     ->label('Materiais')
-                    ->relationship()
                     ->schema([
                         Select::make('material_id')
                             ->label('Material')
@@ -37,9 +36,8 @@ class ProdutoForm
                             ->required(),
                     ])
                     ->columns(2),
-                Repeater::make('insumos')
+                Repeater::make('insumosSelecionados')
                     ->label('Insumos')
-                    ->relationship()
                     ->schema([
                         Select::make('insumo_id')
                             ->label('Insumo')
