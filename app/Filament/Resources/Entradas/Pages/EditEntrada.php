@@ -16,4 +16,21 @@ class EditEntrada extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $insumo = $this->record->insumo;
+
+        if ($insumo && ! $insumo->produto_unico && $insumo->qtd_por_caixa) {
+            if (filled($data['quantidade_pedida'] ?? null)) {
+                $data['quantidade_pedida_caixas'] = round($data['quantidade_pedida'] / $insumo->qtd_por_caixa, 3);
+            }
+
+            if (filled($data['quantidade_recebida'] ?? null)) {
+                $data['quantidade_recebida_caixas'] = round($data['quantidade_recebida'] / $insumo->qtd_por_caixa, 3);
+            }
+        }
+
+        return $data;
+    }
 }

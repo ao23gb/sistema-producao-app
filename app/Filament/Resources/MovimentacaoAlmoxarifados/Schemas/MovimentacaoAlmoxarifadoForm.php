@@ -28,18 +28,60 @@ class MovimentacaoAlmoxarifadoForm
                         'devolucao' => 'Devolução',
                     ])
                     ->required(),
+                Select::make('tipo_item')
+                    ->label('Tipo de Item')
+                    ->options([
+                        'insumo' => 'Insumo',
+                        'material' => 'Material',
+                    ])
+                    ->default('insumo')
+                    ->required()
+                    ->dehydrated(false)
+                    ->live()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $set('insumo_id', null);
+                        $set('material_id', null);
+                    }),
                 Select::make('insumo_id')
                     ->label('Insumo')
                     ->options(Insumo::pluck('nome', 'id'))
-                    ->nullable(),
+                    ->required()
+                    ->live()
+                    ->visible(fn ($get) => $get('tipo_item') === 'insumo'),
                 Select::make('material_id')
                     ->label('Material')
                     ->options(Material::pluck('nome', 'id'))
-                    ->nullable(),
-                TextInput::make('quantidade')
-                    ->label('Quantidade')
+                    ->required()
+                    ->visible(fn ($get) => $get('tipo_item') === 'material'),
+                TextInput::make('quantidade_caixas')
+                    ->label('Quantidade (Caixas)')
                     ->numeric()
-                    ->required(),
+                    ->dehydrated(false)
+                    ->live(onBlur: true)
+                    ->visible(function ($get) {
+                        $insumo = Insumo::find($get('insumo_id'));
+
+                        return $get('tipo_item') === 'insumo' && $insumo && ! $insumo->produto_unico;
+                    })
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $insumo = Insumo::find($get('insumo_id'));
+
+                        if ($insumo && ! $insumo->produto_unico && $insumo->qtd_por_caixa && filled($state)) {
+                            $set('quantidade', round($state * $insumo->qtd_por_caixa, 3));
+                        }
+                    }),
+                TextInput::make('quantidade')
+                    ->label('Quantidade (Unidades)')
+                    ->numeric()
+                    ->required()
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $insumo = Insumo::find($get('insumo_id'));
+
+                        if ($get('tipo_item') === 'insumo' && $insumo && ! $insumo->produto_unico && $insumo->qtd_por_caixa && filled($state)) {
+                            $set('quantidade_caixas', round($state / $insumo->qtd_por_caixa, 3));
+                        }
+                    }),
                 Textarea::make('observacao')
                     ->label('Observação')
                     ->rows(3),

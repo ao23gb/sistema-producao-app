@@ -39,4 +39,24 @@ class MaterialEmUso extends Model
     {
         return $this->belongsTo(Material::class);
     }
+
+    protected static function booted(): void
+    {
+        static::saving(function (MaterialEmUso $materialEmUso) {
+            if ($materialEmUso->isDirty('status') && $materialEmUso->status === 'baixado') {
+                $materialEmUso->baixado_em = $materialEmUso->baixado_em ?? now();
+            }
+        });
+
+        static::saved(function (MaterialEmUso $materialEmUso) {
+            if ($materialEmUso->wasChanged('status') && $materialEmUso->status === 'baixado') {
+                $estoque = Estoque::query()
+                    ->when($materialEmUso->insumo_id, fn ($query) => $query->where('insumo_id', $materialEmUso->insumo_id))
+                    ->when($materialEmUso->material_id, fn ($query) => $query->where('material_id', $materialEmUso->material_id))
+                    ->first();
+
+                $estoque?->decrement('estoque_total', $materialEmUso->quantidade_atribuida);
+            }
+        });
+    }
 }

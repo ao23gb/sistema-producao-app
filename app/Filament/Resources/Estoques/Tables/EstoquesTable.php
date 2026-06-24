@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Estoques\Tables;
 
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class EstoquesTable
@@ -11,18 +12,24 @@ class EstoquesTable
     {
         return $table
             ->columns([
-                TextColumn::make('insumo.nome')
-                    ->label('Insumo')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('material.nome')
-                    ->label('Material')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('estoque_total')
+                TextColumn::make('nome_produto')
+                    ->label('Produto')
+                    ->searchable(query: function ($query, string $search) {
+                        $query->where(function ($query) use ($search) {
+                            $query->whereHas('insumo', fn ($q) => $q->where('nome', 'like', "%{$search}%"))
+                                ->orWhereHas('material', fn ($q) => $q->where('nome', 'like', "%{$search}%"));
+                        });
+                    }),
+                TextColumn::make('tipo_produto')
+                    ->label('Tipo')
+                    ->badge()
+                    ->color(fn ($state) => $state === 'Insumo' ? 'info' : 'warning'),
+                TextColumn::make('em_uso')
+                    ->label('Em Uso')
+                    ->numeric(),
+                TextColumn::make('quantidade_caixas')
                     ->label('Quantidade em Caixas')
-                    ->formatStateUsing(fn ($state, $record) => $record->eh_por_caixa ? $state : '—')
-                    ->sortable(),
+                    ->formatStateUsing(fn ($state) => $state ?? '—'),
                 TextColumn::make('quantidade_unitaria')
                     ->label('Quantidade Unitária')
                     ->numeric(),
@@ -36,7 +43,19 @@ class EstoquesTable
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('tipo')
+                    ->label('Tipo')
+                    ->options([
+                        'insumo' => 'Insumo',
+                        'material' => 'Material',
+                    ])
+                    ->query(function ($query, array $data) {
+                        if ($data['value'] === 'insumo') {
+                            $query->whereNotNull('insumo_id');
+                        } elseif ($data['value'] === 'material') {
+                            $query->whereNotNull('material_id');
+                        }
+                    }),
             ]);
     }
 }
